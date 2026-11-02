@@ -1,20 +1,78 @@
 # gruplac-json
 
-Build a JSON from a research group's public GrupLAC page (Minciencias, Colombia)
+Convierte la página pública del **GrupLAC** de un grupo de investigación (Minciencias, Colombia) en un único documento JSON: datos básicos, instituciones (con su ROR), plan estratégico, líneas de investigación, integrantes con su COD_RH y su periodo de vinculación, producción bibliográfica en el esquema de obras de [ImpactU](https://impactu.colav.co), proyectos, eventos y todos los demás productos (`other_products`), con autores, título, lugar, fechas, identificadores, enlaces y los demás datos rotulados de cada ítem.
 
-## Install
+Es la pareja de [cvlac-json](https://github.com/restrepo/cvlac-json): los productos que existen en ambos tienen la misma forma, y usa sus herramientas de ROR y de Scienti.
+
+- **Afiliaciones de los integrantes:** cada autor de un producto que aparece en "Integrantes del grupo" recibe su COD_RH y, si el año del producto está en su periodo "Inicio - Fin Vinculación", el grupo como afiliación, con la procedencia (`gruplac.provenance: "gruplac members"`), como hace cvlac-json con la experiencia.
+- Con una clave de [apis.colav.co](https://apis.colav.co), agrega los **identificadores Scienti** (`COD_RH-COD_PRODUCTO`, `-COD_PROYECTO`, `-COD_EVENTO`, `-COD_RED`) de los registros del grupo que coinciden. Los productos sin autores en la página (consultorías, conceptos técnicos, procesos de apropiación social…) reciben como autores a los integrantes que registraron ese producto en Scienti.
+
+## Instalación
 
 ```bash
 pip install gruplac-json
-gruplac-json --version
 ```
 
-## Development
+## Uso en la terminal
 
 ```bash
+gruplac-json COL0008423                        # escribe gruplac_COL0008423.json
+gruplac-json 1676                              # el número de GrupLAC, con o sin ceros a la izquierda
+gruplac-json COL0008423 --save-html g.html     # guarda también la página descargada
+gruplac-json COL0008423 --html g.html.gz       # analiza una página guardada (.html o .html.gz), sin descargar
+gruplac-json COL0008423 -o -                   # JSON por la salida estándar
+gruplac-json COL0008423 --scienti off --ror off
+```
+
+| Opción | Efecto |
+| --- | --- |
+| `--scienti auto` (por defecto) | Si hay clave de apis.colav.co, agrega los ids Scienti de los registros del grupo que coinciden. |
+| `--scienti off` | No consulta Scienti. |
+| `--institution`, `--model-year` | Volcado de Scienti (`udea`, `univalle`, `uec`, `unaula`) y año del modelo. Por defecto se prueban en ese orden. |
+| `--apikey CLAVE` | Clave de apis.colav.co para esta ejecución. |
+| `--ror auto` / `off` | Consulta o no el registro ROR (instituciones del grupo y de las tesis). |
+
+El código COL se traduce al número de GrupLAC con la tabla de los 6.936 grupos de la búsqueda de grupos de Minciencias (31 de octubre de 2026), incluida en el paquete. Un grupo que no esté en la tabla se puede pedir por su número de GrupLAC; sin código COL no se consulta Scienti.
+
+La clave de apis.colav.co se toma, en este orden, de `--apikey`, de la variable de entorno `COLAV_APIKEY` o del archivo `~/.config/colav/apikey`. Nunca se imprime.
+
+## Uso como biblioteca
+
+```python
+from gruplac_json import extract
+
+data = extract("COL0008423", scienti="off")  # descarga y analiza la página
+print(data["name"], len(data["members"]), len(data["works"]))
+
+from gruplac_json.parser import decode
+html = decode(open("g.html", "rb").read())
+data = extract("COL0008423", html=html, ror=False)
+```
+
+## Esquema del JSON
+
+El esquema completo, campo por campo, está en [docs/gruplac_json_esquema.md](docs/gruplac_json_esquema.md).
+
+## Desarrollo
+
+```bash
+git clone https://github.com/restrepo/gruplac-json.git
+cd gruplac-json
 python -m pip install -e ".[dev]"
 python -m pytest
 ruff check . && ruff format --check .
 ```
 
-Releases are published to PyPI from GitHub Actions when a `v*` tag is pushed; see [PUBLISHING.md](PUBLISHING.md) and [CHANGELOG.md](CHANGELOG.md).
+Las pruebas no usan la red: corren sobre una página sintética (`tests/fixtures/gruplac_sintetico.html`) con personas y productos ficticios y la misma estructura HTML del GrupLAC.
+
+Cómo publicar una versión nueva en PyPI: [PUBLISHING.md](PUBLISHING.md) y [CHANGELOG.md](CHANGELOG.md).
+
+## Avisos
+
+- La página del GrupLAC es pública, pero contiene datos personales (nombres de los integrantes, correo del grupo). Úselos de acuerdo con la normativa de protección de datos que aplique.
+- Sea moderado con el servidor de Minciencias: haga una pausa de uno o dos segundos entre grupos cuando procese muchos.
+- Las afiliaciones de los productos son **inferidas** del periodo de vinculación (el autor era integrante del grupo ese año); el GrupLAC no las declara. Los coautores que no son integrantes no tienen afiliación.
+
+## Licencia
+
+[MIT](LICENSE)

@@ -5,6 +5,17 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 ## [Unreleased]
 
 ### Added
-- First version.
+- Parser of the public GrupLAC page: basic data, institutions, strategic plan, research lines, members
+  ("Integrantes del grupo") with COD_RH and linkage period, bibliographic production as ImpactU works, projects,
+  scientific events and every other section in `other_products`, with the structured fields of each item.
+- Same record schema as cvlac-json for the same products (depends on cvlac-json for its helpers); the four social
+  appropriation sections merged into "Apropiación social del conocimiento".
+- Member affiliations: authors matched to members by name get their COD_RH and, when the product's year is in their
+  linkage period, the group as affiliation with `gruplac.provenance: "gruplac members"`.
+- Scienti ids from the group's records in apis.colav.co (`group_id`), with the other members' records of the same
+  product in `scienti.also`; items without authors on the page get the members who registered them in Scienti.
+- ROR ids of the group's institutions and of thesis institutions.
+- COL code <-> GrupLAC number table (6,936 groups, 2026-10-31) shipped with the package.
+- Command line `gruplac-json COL|NRO` with `--html`, `--save-html`, `--scienti`, `--ror`, `--apikey`.
 
 [Unreleased]: https://github.com/restrepo/gruplac-json/commits/main
