@@ -4,6 +4,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-11-02
+
 ### Added
 - Parser of the public GrupLAC page: basic data, institutions, strategic plan, research lines, members
   ("Integrantes del grupo") with COD_RH and linkage period, bibliographic production as ImpactU works, projects,
@@ -16,6 +18,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   product in `scienti.also`; items without authors on the page get the members who registered them in Scienti.
 - ROR ids of the group's institutions and of thesis institutions.
 - COL code <-> GrupLAC number table (6,936 groups, 2026-10-31) shipped with the package.
+- Items of Guías de práctica clínica and Proyectos de ley, which come after a blank header row.
 - Command line `gruplac-json COL|NRO` with `--html`, `--save-html`, `--scienti`, `--ror`, `--apikey`.
 
-[Unreleased]: https://github.com/restrepo/gruplac-json/commits/main
+[Unreleased]: https://github.com/restrepo/gruplac-json/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/restrepo/gruplac-json/releases/tag/v0.1.0
