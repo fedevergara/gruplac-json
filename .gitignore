@@ -1,0 +1,17 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
+# Add here any generated outputs or data files that hold personal data (e.g. downloaded pages)
+# Never commit credentials
+.env
+.pypirc
+*apikey*

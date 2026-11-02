@@ -1,0 +1,64 @@
+[build-system]
+requires = ["hatchling>=1.24", "hatch-vcs>=0.4"]
+build-backend = "hatchling.build"
+
+[project]
+name = "gruplac-json"
+dynamic = ["version"]
+description = "Build a JSON from a research group's public GrupLAC page (Minciencias, Colombia)"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.10"
+authors = [{ name = "Diego Restrepo", email = "restrepo@udea.edu.co" }]
+keywords = []
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Typing :: Typed",
+]
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "pytest-cov>=5", "ruff==0.17.3", "build>=1.2", "twine>=5"]
+
+[project.scripts]
+gruplac-json = "gruplac_json.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/restrepo/gruplac-json"
+Repository = "https://github.com/restrepo/gruplac-json"
+Issues = "https://github.com/restrepo/gruplac-json/issues"
+Changelog = "https://github.com/restrepo/gruplac-json/blob/main/CHANGELOG.md"
+
+# Version from the git tag (v0.1.0 -> 0.1.0); commits after a tag get 0.1.1.devN
+[tool.hatch.version]
+source = "vcs"
+
+[tool.hatch.version.raw-options]
+local_scheme = "no-local-version"   # PyPI and TestPyPI reject local versions (+g1234abc)
+
+[tool.hatch.build.targets.sdist]
+include = ["src/", "tests/", "README.md", "CHANGELOG.md", "LICENSE"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/gruplac_json"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra --strict-markers"
+
+[tool.coverage.run]
+source = ["gruplac_json"]
+branch = true
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "SIM", "RUF"]

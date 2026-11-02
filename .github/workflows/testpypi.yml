@@ -1,0 +1,32 @@
+# Manual dry run: publishes the current main branch to TestPyPI (Actions > TestPyPI > Run workflow).
+# Versions are like 0.1.1.dev3, so every run needs a new commit. See PUBLISHING.md.
+name: TestPyPI
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  publish-testpypi:
+    runs-on: ubuntu-latest
+    environment:
+      name: testpypi
+      url: https://test.pypi.org/project/gruplac-json/
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+      - run: python -m pip install build twine
+      - run: python -m build
+      - run: python -m twine check --strict dist/*
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+          # Alternative with an API token: password: ${{ secrets.TEST_PYPI_API_TOKEN }}
