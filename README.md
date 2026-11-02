@@ -45,6 +45,7 @@ data = extract("COL0008423", scienti="off")  # descarga y analiza la página
 print(data["name"], len(data["members"]), len(data["works"]))
 
 from gruplac_json.parser import decode
+
 html = decode(open("g.html", "rb").read())
 data = extract("COL0008423", html=html, ror=False)
 ```

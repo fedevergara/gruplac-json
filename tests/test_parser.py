@@ -187,3 +187,21 @@ def test_resolve():
         resolve("COL9999999")
     with pytest.raises(ValueError):
         resolve("abc")
+
+
+def test_colon_inside_a_title():
+    fl, _ = fields("Nombre del Producto: Exposición Histórica: Los inmigrantes, en Barranquilla ,,")
+    assert fl == [("Nombre del Producto", "Exposición Histórica: Los inmigrantes, en Barranquilla")]
+    fl, _ = fields("Fecha de presentación: Año: 2021, Mes: Febrero")
+    assert [k for k, _ in fl] == ["Fecha de presentación", "Año", "Mes"]
+
+
+def test_journal_with_issn_zero():
+    from gruplac_json.parser import work_from_item
+
+    frag = (
+        "1.- <strong>Publicado en revista especializada:</strong> Un artículo viejo<br/>\n"
+        "Colombia, Revista Ciencia de Prueba ISSN: 0, 1992 vol:8 fasc: págs: - , DOI: <br>\nAutores: ANA MARIA PEREZ GOMEZ"
+    )
+    w = work_from_item("Artículos publicados", False, frag, "00000000000001", 1)
+    assert (w["source"]["name"], w["source"]["external_ids"], w["year_published"]) == ("Revista Ciencia de Prueba", [], 1992)

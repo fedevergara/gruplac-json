@@ -151,6 +151,39 @@ ID_LABELS = {
     "numero acto administrativo curso": "administrative act",
 }
 LIST_KEYS = {"audience", "differential_focus"}
+KNOWN = {
+    *LABEL_KEYS,
+    *TITLE_LABELS,
+    *DATE_LABELS,
+    *START_LABELS,
+    *END_LABELS,
+    *ID_LABELS,
+    *GREEDY,
+    "ano",
+    "mes",
+    "mes de solicitud",
+    "ano de solicitud",
+    "ano de inicio",
+    "mes de inicio",
+    "ano de fin",
+    "mes de fin",
+    "medio de verificacion",
+    "sitio web",
+    "sitio web url",
+    "url",
+    "pagina web",
+    "tipo",
+    "doi",
+    "nro paginas",
+    "nombre del estudiante",
+    "nombre del orientado",
+    "tutor es cotutor es",
+    "numero de paginas",
+    "nombre del espacio o evento",
+    "entidad convocante 1",
+    "revista",
+    "libro",
+}
 URL_RE = re.compile(r"(?:https?://|www\.)[^\s,;<>\"']+", re.I)
 LABEL_RE = re.compile(r"(?:(?<=^)|(?<=,)|(?<=: )|(?<=  )|(?<=\|))\s*([^\W\d_][^:,|]{0,70}?)\s*:(?=\s|$|[^\s/])")
 ISO = re.compile(r"\b((?:19|20)\d\d)-(\d\d)-(\d\d)\b")
@@ -222,6 +255,12 @@ def fields(line):
     for lab in INLINE_LABELS:
         line = re.sub(rf"(?<=\S) ({lab}):", r", \1:", line)
     ms = [m for m in LABEL_RE.finditer(line) if not m.group(1).isupper()]  # 'CINEMATECA: ...' is text, not a label
+    # 'Nombre del Producto: Exposición: Los inmigrantes...': after an empty value, an unknown label is part of the value
+    ms = [
+        m
+        for k, m in enumerate(ms)
+        if not (k and norm(m.group(1)) not in KNOWN and not line[ms[k - 1].end() : m.start(1)].strip())
+    ]
     out = []
     for k, m in enumerate(ms):
         lab = m.group(1).strip()
@@ -564,7 +603,7 @@ def work_from_item(section, endorsed, frag, nro, n):
     if mc and not re.search(r":", mc.group(1)):
         country = clean(mc.group(1))
     source_name = None
-    if issn:
+    if re.search(r"\sISSN:", detail):  # also with 'ISSN: 0'
         ms = re.match(r"\s*[^,]*,\s*(.*?)\s+ISSN:", detail)
         source_name = value(ms.group(1)) if ms else None
     elif section.startswith("Capítulos"):
