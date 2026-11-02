@@ -792,16 +792,17 @@ def extract(group_id, html=None, scienti="auto", institution=None, model_year=No
     nro, col = resolve(group_id)
     page = html if html is not None else fetch(nro)
     data = build(page, nro, col)
-    members.enrich(data)
+    ror_records = members.lookup_institutions(data, ror=ror)
+    members.enrich(data, ror_records)
     if scienti != "off" and col:
         try:
             if scienti_match.enrich(data, col, institution, model_year, key=apikey, log=log):
-                members.enrich(data)  # authors added from Scienti records get their affiliations
+                members.enrich(data, ror_records)  # authors added from Scienti records get their affiliations
         except RuntimeError as e:
             log(f"scienti: skipped ({e})")
     elif scienti != "off":
         log("scienti: skipped (COL code unknown for this GrupLAC number)")
-    members.ror_institutions(data, ror=ror)
+    members.thesis_institutions(data, ror=ror)
     count(data)
     tidy(data)
     return data

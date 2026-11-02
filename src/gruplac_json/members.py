@@ -15,6 +15,7 @@ from cvlac_json import ror as ror_api
 from cvlac_json.parser import norm
 
 PROVENANCE = "gruplac members"
+INST_PROVENANCE = "gruplac institutions"
 RANK = {"exact": 0, "words": 1, "spelling": 2}
 
 
@@ -94,6 +95,26 @@ def group_affiliation(data, m, how):
     }
 
 
+def institution_affiliation(inst, r, m):
+    """A group's institution as affiliation of a member, in the form of cvlac-json's affiliations from the experience."""
+    return {
+        "id": r["id"] if r else "",
+        "name": r["name"] if r else inst["name"],
+        "types": r["types"] if r else [],
+        "external_ids": r["external_ids"] if r else [],
+        "addresses": r["addresses"] if r else [],
+        "years": member_years(m),
+        "gruplac": {
+            "provenance": INST_PROVENANCE,
+            "names": [inst["name"]],
+            "status": inst.get("status"),
+            "member": m["full_name"],
+            "period": m.get("period"),
+            "ror_match": r["match"] if r else None,
+        },
+    }
+
+
 def item_year(it):
     y = it.get("year_published") or it.get("year")
     if not y:
@@ -112,8 +133,10 @@ def records(data):
             yield "products", it
 
 
-def enrich(data):
-    """Set id, external_ids and the group affiliation of every author that is a member. Safe to call again."""
+def enrich(data, ror_records=None):
+    """Set id, external_ids and the affiliations of every author that is a member: the group and the group's institutions
+    (with the ROR records of lookup_institutions), when the product's year is in the member's period. Safe to call again."""
+    ror_records = ror_records or {}
     by_cod = {m["cod_rh"]: m for m in data["members"] if m.get("cod_rh")}
     find = Finder(data["members"])
     stats = {"authors": 0, "authors_matched": 0, "name_match": {}, "works_with_affiliation": 0, "products_with_affiliation": 0}
@@ -134,41 +157,66 @@ def enrich(data):
             a["id"] = m["cod_rh"]
             prov = "scienti" if how == "scienti" else "gruplac"
             a["external_ids"] = [{"provenance": prov, "source": "scienti", "id": m["cod_rh"]}]
-            others = [x for x in a.get("affiliations") or [] if (x.get("gruplac") or {}).get("provenance") != PROVENANCE]
+            others = [
+                x
+                for x in a.get("affiliations") or []
+                if (x.get("gruplac") or {}).get("provenance") not in (PROVENANCE, INST_PROVENANCE)
+            ]
             aff = group_affiliation(data, m, how)
-            a["affiliations"] = others + ([aff] if year and year in aff["years"] else [])
-            got = got or year in aff["years"] if year else got
+            if year and year in aff["years"]:
+                insts = [institution_affiliation(i, ror_records.get(i["name"]), m) for i in data["institutions"]]
+                a["affiliations"] = [aff, *insts, *others]
+                got = True
+            else:
+                a["affiliations"] = others
         stats[f"{kind}_with_affiliation"] += got
     data["counts"]["works_with_affiliation"] = stats["works_with_affiliation"]
     data["counts"]["products_with_affiliation"] = stats["products_with_affiliation"]
+    errors = (data.get("affiliations_from_members") or {}).get("ror_lookup_errors", 0)
     data["affiliations_from_members"] = {
+        "ror_lookup_errors": errors,
         "members": len(data["members"]),
         "members_with_cod_rh": len(by_cod),
         **stats,
         "rule": "an author is a member when the name matches one member of 'Integrantes del grupo' (exact, same words "
         "or one name inside the other with >= 3 words, or one word misspelled by one letter); the group is the "
-        "affiliation when the product's year is in the member's period 'Inicio - Fin Vinculación'",
+        "affiliation when the product's year is in the member's period 'Inicio - Fin Vinculación', and so are the group's "
+        "institutions (with their ROR id)",
     }
 
 
-def ror_institutions(data, ror=True):
-    """ROR of the group's institutions and of the thesis institutions (which also go to advisors and students)."""
+def _looker(ror):
     cache = ror_api._load_cache() if ror else {}
-    errors = 0
+    errors = [0]
 
     def look(name):
-        nonlocal errors
         if not ror:
             return None
         try:
             return ror_api.lookup(name, cache)
         except OSError:
-            errors += 1
+            errors[0] += 1
             return None
 
+    return cache, errors, look
+
+
+def lookup_institutions(data, ror=True):
+    """ROR of the group's institutions: sets institutions[].ror and returns {name: ROR record or None} for enrich()."""
+    cache, errors, look = _looker(ror)
+    out = {}
     for inst in data["institutions"]:
-        r = look(inst["name"])
+        r = out[inst["name"]] = look(inst["name"])
         inst["ror"] = {"id": r["id"], "name": r["name"], "match": r["match"]} if r else None
+    if ror:
+        ror_api._save_cache(cache)
+    data.setdefault("affiliations_from_members", {})["ror_lookup_errors"] = errors[0]
+    return out
+
+
+def thesis_institutions(data, ror=True):
+    """ROR of the thesis institutions, which also go to advisors and students."""
+    cache, errors, look = _looker(ror)
     for it in (data.get("other_products") or {}).get("Trabajos dirigidos/turorías", []):
         inst = it.get("institution")
         if not (isinstance(inst, dict) and inst.get("name")):
@@ -190,4 +238,5 @@ def ror_institutions(data, ror=True):
                 a["affiliations"] = [*keep, json.loads(json.dumps(aff))]
     if ror:
         ror_api._save_cache(cache)
-    data.setdefault("affiliations_from_members", {})["ror_lookup_errors"] = errors
+    s = data.setdefault("affiliations_from_members", {})
+    s["ror_lookup_errors"] = s.get("ror_lookup_errors", 0) + errors[0]

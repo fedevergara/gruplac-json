@@ -4,7 +4,7 @@ Convierte la página pública del **GrupLAC** de un grupo de investigación (Min
 
 Es la pareja de [cvlac-json](https://github.com/restrepo/cvlac-json): los productos que existen en ambos tienen la misma forma, y usa sus herramientas de ROR y de Scienti.
 
-- **Afiliaciones de los integrantes:** cada autor de un producto que aparece en "Integrantes del grupo" recibe su COD_RH y, si el año del producto está en su periodo "Inicio - Fin Vinculación", el grupo como afiliación, con la procedencia (`gruplac.provenance: "gruplac members"`), como hace cvlac-json con la experiencia.
+- **Afiliaciones de los integrantes:** cada autor de un producto que aparece en "Integrantes del grupo" recibe su COD_RH y, si el año del producto está en su periodo "Inicio - Fin Vinculación", el grupo como afiliación, con la procedencia (`gruplac.provenance: "gruplac members"`), y las instituciones declaradas del grupo con su ROR (`"gruplac institutions"`), como hace cvlac-json con la experiencia.
 - Con una clave de [apis.colav.co](https://apis.colav.co), agrega los **identificadores Scienti** (`COD_RH-COD_PRODUCTO`, `-COD_PROYECTO`, `-COD_EVENTO`, `-COD_RED`) de los registros del grupo que coinciden. Los productos sin autores en la página (consultorías, conceptos técnicos, procesos de apropiación social…) reciben como autores a los integrantes que registraron ese producto en Scienti.
 
 ## Instalación
