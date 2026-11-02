@@ -184,3 +184,23 @@ Se piden a apis.colav.co los registros del grupo (`/scienti/product`, `/project`
 - Los ítems sin autores en la página reciben como autores a los integrantes cuyos COD_RH tienen esos registros (`authors_inferred: true`).
 
 Objeto `scienti` del nivel superior: `institution`, `model_year`, `source`, `group_id`, `products` (registros de productos del grupo), `products_matched`, `matched` (`works`, `other_products`, `projects`, `events`, `networks`), `records`, `items_with_authors_from_scienti`, `rules`, `not_on_page` (registros de productos sin ítem en la página) y `not_on_page_note`.
+
+## 12. Valores observados (7.170 páginas guardadas, 2026-11-02)
+
+Las 7.170 páginas descargadas el 31 de octubre y el 1 de noviembre de 2026 (los 6.936 grupos de la búsqueda de Minciencias y 234 más que conoce ImpactU) se analizaron sin errores. Algunas cifras, sumadas sobre todos los grupos:
+
+| Sección | Ítems | Con título | Con año | Autores que son integrantes | Ítems con afiliación al grupo |
+| --- | --- | --- | --- | --- | --- |
+| Artículos publicados | 588.181 | 100 % | 100 % | 59 % | 91 % |
+| Capítulos de libro publicados | 169.019 | 100 % | 100 % | 72 % | 93 % |
+| Libros publicados | 61.299 | 100 % | 100 % | 65 % | 93 % |
+| Trabajos dirigidos/turorías | 869.980 | 100 % | 100 % | 48 % | 91 % |
+| Jurado/Comisiones evaluadoras de trabajo de grado | 390.944 | 100 % | 100 % | 49 % | 94 % |
+| Eventos Científicos | 650.438 | 100 % | 100 % | — | — |
+| Proyectos | 334.728 | 100 % | 99 % | — | — |
+| Consultorías científico-tecnológicas | 58.218 | 100 % | 100 % | sin autores en la página | |
+| Apropiación social del conocimiento (4 secciones) | 32.186 | 100 % | 100 % | sin autores en la página | |
+| Obras o productos | 23.026 | 94 % | 100 % | sin autores en la página | |
+| Integrantes del grupo | 301.377 | | | | |
+
+"Autores que son integrantes" cuenta personas de "Autores:" (en tesis y jurados también estudiantes, que pocas veces son integrantes). "Con afiliación al grupo" cuenta ítems con al menos un integrante cuyo periodo contiene el año del ítem. Las secciones Guías de práctica clínica y Proyectos de ley ponen una fila de encabezado vacía antes de sus ítems (868 ítems en total); se leen como parte de su sección.

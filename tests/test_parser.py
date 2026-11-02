@@ -112,7 +112,12 @@ def test_art_sections_inside_one_table(data):
 
 def test_empty_sections_are_left_out(data):
     assert "Notas científicas" not in data["counts"]
-    assert "Guias de práctica clínica" not in data["other_products"]
+    guide = section(data, "Guias de práctica clínica")[0]  # items after a blank header row
+    assert (guide["title"], guide["funder"], guide["year"]) == (
+        "Guía sintética de práctica clínica",
+        "Ministerio de Prueba",
+        2014,
+    )
     assert data["section_categories"]["Softwares"] == "PRODUCCIÓN TÉCNICA Y TECNOLÓGICA"
 
 

@@ -293,7 +293,11 @@ def blocks(page):
             end = min(end if end >= 0 else len(page), heads[k + 1].start())
         body = page[m.end() : end if end >= 0 else len(page)]
         rows = re.findall(r"<tr[^>]*>(.*?)(?:</tr>|$)", body, flags=re.I | re.S)
-        out.append((text(m.group(1)), [r for r in rows if "celdaEncabezado" not in r and text(r)]))
+        rows = [r for r in rows if "celdaEncabezado" not in r and text(r)]
+        if not text(m.group(1)) and out:  # Guías de práctica clínica, Proyectos de ley: a blank header row before the items
+            out[-1][1].extend(rows)
+        else:
+            out.append((text(m.group(1)), rows))
     name = re.search(r'<span class="celdaEncabezado">(.*?)</span>', page, flags=re.I | re.S)
     return (text(name.group(1)) if name else None), out
 
