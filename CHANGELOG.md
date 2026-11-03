@@ -4,6 +4,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-11-02
+
 ### Added
 - Authors who are members also get the group's declared institutions (`institutions`) as affiliations, with their ROR
   id, types, external ids and address, when the product's year is in the member's period, in the form of cvlac-json's
@@ -26,5 +28,6 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - Items of Guías de práctica clínica and Proyectos de ley, which come after a blank header row.
 - Command line `gruplac-json COL|NRO` with `--html`, `--save-html`, `--scienti`, `--ror`, `--apikey`.
 
-[Unreleased]: https://github.com/restrepo/gruplac-json/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/restrepo/gruplac-json/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/restrepo/gruplac-json/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/restrepo/gruplac-json/releases/tag/v0.1.0
