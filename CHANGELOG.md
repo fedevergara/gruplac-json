@@ -4,6 +4,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+### Changed
+- `product_hash` of untitled items (no letter or digit in `title`): computed with the item's `text` (`gruplac.text` for works) instead of the empty title, as in cvlac-json 0.10. Hashes of titled items do not change. New count `product_hash_from_text`. Schema §13.
+
 ## [0.3.0] - 2026-11-02
 
 ### Added

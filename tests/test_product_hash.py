@@ -47,3 +47,20 @@ def test_unique_per_member(page):
     title = "A synthetic benchmark for testing GrupLAC parsers"
     assert h == [product_hash(title, "1", "work", 2017), product_hash(title, "1", "work", 2017, n=2)]
     assert d["counts"]["product_hash_repeated"] == 1
+
+
+def test_untitled_items_are_hashed_with_their_text():
+    """As in cvlac-json: an item with no letter or digit in the title is hashed with its text."""
+    from gruplac_json.members import add_product_hashes
+
+    def item(text):
+        return {"title": "", "text": text, "year": 2020, "authors": [{"full_name": "ANA", "id": "0000000001"}]}
+
+    texts = ["Revisión de la revista Uno, 2020", "Revisión de la revista Dos, 2020", "Revisión de la revista Uno, 2020"]
+    its = [item(t) for t in texts]
+    data = {"works": [], "other_products": {"Demás trabajos": its}, "counts": {}}
+    add_product_hashes(data)
+    h = [it["authors"][0]["product_hash"] for it in its]
+    assert h[0] == product_hash(its[0]["text"], "1", "other", 2020) and h[1] == product_hash(its[1]["text"], "1", "other", 2020)
+    assert h[2] == product_hash(its[0]["text"], "1", "other", 2020, n=2)
+    assert data["counts"] == {"product_hash_repeated": 1, "product_hash_from_text": 3}
