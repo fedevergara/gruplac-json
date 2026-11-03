@@ -54,6 +54,22 @@ html = decode(open("g.html", "rb").read())
 data = extract("COL0008423", html=html, ror=False)
 ```
 
+## Identificador de producto (`product_hash`)
+
+Cada integrante autor de una obra o de un producto de `other_products` lleva, en su entrada de `authors[]`, un `product_hash`: el SHA-1 de `título|COD_RH|tipo|año`, con el título en minúsculas, sin tildes y solo con letras y dígitos, el COD_RH del integrante y el tipo `work` (obras) u `other` (demás productos). Es el mismo valor que [cvlac-json](https://github.com/restrepo/cvlac-json) pone en la entrada del dueño de cada producto de su CvLAC, así que une un producto del GrupLAC con el del CV de cada integrante que lo firmó, sin depender de mayúsculas, tildes, espacios ni puntuación. Un artículo de dos integrantes tiene dos `product_hash`, uno por integrante; los autores que no son integrantes tienen `null`. Es único por integrante: si dos de sus registros dan la misma clave, el segundo lleva `|2` al final, el tercero `|3`…
+
+```python
+from gruplac_json import product_hash
+from gruplac_json.product_hash import hash_key
+
+hash_key("Singlet Dirac dark matter streamlined", "0000707619", "work", 2024)
+# 'singletdiracdarkmatterstreamlined|0000707619|work|2024'
+product_hash("Singlet Dirac dark matter streamlined", "0000707619", "work", 2024)
+# 'efc8d0bb2fa5…' (40 caracteres)
+```
+
+Cambia si cambia el título (más allá de esas diferencias), el año o el tipo. Reglas, ejemplos y cuánto coincide con los CvLAC: [§13 del esquema](docs/gruplac_json_esquema.md#13-identificador-de-producto-product_hash).
+
 ## Esquema del JSON
 
 El esquema completo, campo por campo, está en [docs/gruplac_json_esquema.md](docs/gruplac_json_esquema.md).

@@ -4,6 +4,17 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+### Added
+- `product_hash` on the author entry of every member of every work and other product: the SHA-1 of
+  `title|COD_RH|kind|year` (normalized title, the member's COD_RH, `work` or `other`), the same value cvlac-json puts
+  on the owner of each CvLAC product, so a GrupLAC product joins each member's CvLAC entry. Unique per member
+  (`|n` for repeated keys, counted in `counts.product_hash_repeated`); `product_hash.py` is a copy of cvlac-json's,
+  pinned by the shared test vectors. README section and schema §13.
+
+### Fixed
+- The year of a work is the one of its citation line, not a year-like number inside the DOI, the ISSN or the pages
+  (1806 for ISSN 1806-3756, 1916 for pages 1889 - 1916): 33 of 3,836 works in nine sample groups changed.
+
 ## [0.2.0] - 2026-11-02
 
 ### Added

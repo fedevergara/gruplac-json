@@ -523,7 +523,7 @@ def structure(section, endorsed, frag):
     if date:
         it["date"] = date
     if not date and not it.get("start") and re.search(r"\b(?:19|20)\d\d\b", lead):
-        it["date"] = iso_date(lead)
+        it["date"] = re.search(r"\b((?:19|20)\d\d)\b", lead).group(1)  # the first year: a later one may be in a DOI
     for k, v in nf.items():  # durations with a unit in the label: 'Duración (semanas): 3'
         mu = re.match(r"duracion\s*\((\w+)\)", k)
         if mu and value(v) and v.strip().isdigit():
@@ -596,10 +596,9 @@ def work_from_item(section, endorsed, frag, nro, n):
     g = lambda pat, s=flat: (lambda m: value(m.group(1)) if m else None)(re.search(pat, s, flags=re.I))
     issn = g(r"ISSN:\s*([\dXx-]{8,9})")
     isbn = g(r"ISBN:\s*([\dXx-]{9,17})")
-    year = it.get("year") if it.get("date") else None
-    if not year:
-        m = re.search(r"(?:^|,\s*|\s)((?:19|20)\d\d)\b(?!-\d)", detail)
-        year = int(m.group(1)) if m else it.get("year")
+    # the year of the citation line ('Colombia, JOURNAL ISSN: x, 2017 vol:...'), not one inside the DOI or a URL
+    m = re.search(r"(?:^|,\s*|\s)((?:19|20)\d\d)\b(?![-/.]\d)", re.sub(r"(?:DOI|URL):\s*\S*|https?://\S+", " ", detail))
+    year = int(m.group(1)) if m else it.get("year")
     m_doi = re.search(r"DOI:\s*(\S*)", flat, flags=re.I)
     doi = find_doi(m_doi.group(1) if m_doi else "", flat, *(lk["url"] for lk in it.get("links") or []))
     country = None
@@ -761,7 +760,7 @@ def count(out):
         c[k] = c.get(k, 0) + 1
     c.update({k: len(v) for k, v in out["other_products"].items()})
     c["endorsed_works"] = sum(bool(w["gruplac"]["endorsed"]) for w in out["works"])
-    for k in ("works_with_affiliation", "products_with_affiliation"):
+    for k in ("works_with_affiliation", "products_with_affiliation", "product_hash_repeated"):
         if k in old:
             c[k] = old[k]
     out["counts"] = c
@@ -803,6 +802,7 @@ def extract(group_id, html=None, scienti="auto", institution=None, model_year=No
     elif scienti != "off":
         log("scienti: skipped (COL code unknown for this GrupLAC number)")
     members.thesis_institutions(data, ror=ror)
+    members.add_product_hashes(data)
     count(data)
     tidy(data)
     return data
