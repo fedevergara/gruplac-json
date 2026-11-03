@@ -1,5 +1,9 @@
 # gruplac-json
 
+[![CI](https://github.com/restrepo/gruplac-json/actions/workflows/ci.yml/badge.svg)](https://github.com/restrepo/gruplac-json/actions/workflows/ci.yml)
+[![PyPI](https://img.shields.io/pypi/v/gruplac-json.svg)](https://pypi.org/project/gruplac-json/)
+[![Python](https://img.shields.io/pypi/pyversions/gruplac-json.svg)](https://pypi.org/project/gruplac-json/)
+
 Convierte la página pública del **GrupLAC** de un grupo de investigación (Minciencias, Colombia) en un único documento JSON: datos básicos, instituciones (con su ROR), plan estratégico, líneas de investigación, integrantes con su COD_RH y su periodo de vinculación, producción bibliográfica en el esquema de obras de [ImpactU](https://impactu.colav.co), proyectos, eventos y todos los demás productos (`other_products`), con autores, título, lugar, fechas, identificadores, enlaces y los demás datos rotulados de cada ítem.
 
 Es la pareja de [cvlac-json](https://github.com/restrepo/cvlac-json): los productos que existen en ambos tienen la misma forma, y usa sus herramientas de ROR y de Scienti.
