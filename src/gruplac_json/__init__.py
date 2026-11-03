@@ -13,5 +13,6 @@ except PackageNotFoundError:  # running from a source tree that was never instal
     __version__ = "0.0.0"
 
 from .parser import build, extract, fetch, resolve
+from .product_hash import product_hash
 
-__all__ = ["__version__", "build", "extract", "fetch", "resolve"]
+__all__ = ["__version__", "build", "extract", "fetch", "product_hash", "resolve"]

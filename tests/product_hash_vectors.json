@@ -1,0 +1,119 @@
+[
+ {
+  "title": "Singlet Dirac dark matter streamlined",
+  "cod_rh": "0000707619",
+  "kind": "work",
+  "year": 2024,
+  "n": 1,
+  "key": "singletdiracdarkmatterstreamlined|0000707619|work|2024",
+  "hash": "efc8d0bb2fa50a617767aa814a57a7a40c1c956f"
+ },
+ {
+  "title": "Bleomicina: Una revisión",
+  "cod_rh": "707619",
+  "kind": "work",
+  "year": 2006,
+  "n": 1,
+  "key": "bleomicinaunarevision|0000707619|work|2006",
+  "hash": "384a3639b8a08142743e23b389d5f24ac95373ab"
+ },
+ {
+  "title": "bleomicina:una revision",
+  "cod_rh": "0000707619",
+  "kind": "work",
+  "year": "2006",
+  "n": 1,
+  "key": "bleomicinaunarevision|0000707619|work|2006",
+  "hash": "384a3639b8a08142743e23b389d5f24ac95373ab"
+ },
+ {
+  "title": "Search for supersymmetry in final states with disappearing tracks in proton-proton collisions at √𝑠=13  TeV",
+  "cod_rh": "0000000001",
+  "kind": "work",
+  "year": 2023,
+  "n": 1,
+  "key": "searchforsupersymmetryinfinalstateswithdisappearingtracksinprotonprotoncollisionsats13tev|0000000001|work|2023",
+  "hash": "8202c3be5b84e9a7087a9db98c56c38aeaf1cbb8"
+ },
+ {
+  "title": "New Structures in the 𝐽/𝜓⁢𝐽/𝜓 Mass Spectrum",
+  "cod_rh": "0000000001",
+  "kind": "work",
+  "year": 2023,
+  "n": 1,
+  "key": "newstructuresinthejjmassspectrum|0000000001|work|2023",
+  "hash": "df729d985a423e327ec08929dce20732ddc27915"
+ },
+ {
+  "title": "Proyecto de juguete entre dos empleos",
+  "cod_rh": "0000000002",
+  "kind": "project",
+  "year": 2009,
+  "n": 1,
+  "key": "proyectodejugueteentredosempleos|0000000002|project|2009",
+  "hash": "9b66b4ea0afab64029e6266f9b2e33593bc708e3"
+ },
+ {
+  "title": "DISPOSITIVO DE JUGUETE",
+  "cod_rh": "0000000002",
+  "kind": "patent",
+  "year": 2021,
+  "n": 1,
+  "key": "dispositivodejuguete|0000000002|patent|2021",
+  "hash": "9022ab0bf581d45149a23e34b70a6e230f34d7bd"
+ },
+ {
+  "title": "Tesis de juguete codirigida",
+  "cod_rh": "0000000002",
+  "kind": "other",
+  "year": 2019,
+  "n": 1,
+  "key": "tesisdejuguetecodirigida|0000000002|other|2019",
+  "hash": "7b674cde49184a5abe8a20a66e884c6042c6c5d2"
+ },
+ {
+  "title": "Una tesis evaluada sin fecha",
+  "cod_rh": "0000000002",
+  "kind": "other",
+  "year": null,
+  "n": 1,
+  "key": "unatesisevaluadasinfecha|0000000002|other|",
+  "hash": "3c1c25a13d9c6fb067ef402d2ab91f01d38121c3"
+ },
+ {
+  "title": null,
+  "cod_rh": "0000000002",
+  "kind": "other",
+  "year": null,
+  "n": 1,
+  "key": "|0000000002|other|",
+  "hash": "980c16868134d16ac59a03538f13de521bc926fe"
+ },
+ {
+  "title": "Niño, Ñandú & Über-Straße — ¿qué?",
+  "cod_rh": "0000000003",
+  "kind": "other",
+  "year": 1999,
+  "n": 1,
+  "key": "ninonanduuberstraeque|0000000003|other|1999",
+  "hash": "c7bbbb990ed9b9d1e8d9e542e1315e213d5fa4c1"
+ },
+ {
+  "title": "Singlet Dirac dark matter streamlined",
+  "cod_rh": "0000707619",
+  "kind": "work",
+  "year": 2024,
+  "n": 2,
+  "key": "singletdiracdarkmatterstreamlined|0000707619|work|2024|2",
+  "hash": "96eea90ab72395ba4a00bb5a69f873fd648bd310"
+ },
+ {
+  "title": null,
+  "cod_rh": "0000000002",
+  "kind": "other",
+  "year": 2024,
+  "n": 3,
+  "key": "|0000000002|other|2024|3",
+  "hash": "430945df726683a0e156b2a55b408dbdf953f38e"
+ }
+]

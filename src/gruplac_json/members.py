@@ -240,3 +240,35 @@ def thesis_institutions(data, ror=True):
         ror_api._save_cache(cache)
     s = data.setdefault("affiliations_from_members", {})
     s["ror_lookup_errors"] = s.get("ror_lookup_errors", 0) + errors[0]
+
+
+def add_product_hashes(data):
+    """`product_hash` (product_hash.py, the same as cvlac-json's) on every member's author entry of every work and other
+    product, computed with that member's COD_RH: a product signed by two members has two hashes, each the one of that
+    member's CvLAC. Unique per member over their records in page order (works, then other_products); non-member
+    authors get null. counts.product_hash_repeated: records that needed an occurrence number (n > 1). Projects are
+    left out: GrupLAC lists no authors for them."""
+    from .product_hash import hash_key, product_hashes
+
+    per = {}  # cod_rh -> [(author entry, title, kind, year)]
+    for w in data["works"]:
+        for a in w.get("authors") or []:
+            if a.get("id"):
+                per.setdefault(a["id"], []).append((a, w.get("title"), "work", w.get("year_published")))
+    for title, its in (data.get("other_products") or {}).items():
+        kind = "patent" if title == "Patentes" else "other"
+        for it in its:
+            year = it.get("year") or (str(it.get("date") or "")[:4] if str(it.get("date") or "")[:4].isdigit() else None)
+            for a in it.get("authors") or []:
+                if a.get("id"):
+                    per.setdefault(a["id"], []).append((a, it.get("title"), kind, year))
+    for _, rec in records(data):
+        for a in rec.get("authors") or []:
+            a["product_hash"] = None
+    repeated = 0
+    for cod, entries in per.items():
+        keys = [(t, k, y) for _, t, k, y in entries]
+        for (a, *_), h in zip(entries, product_hashes(keys, cod), strict=True):
+            a["product_hash"] = h
+        repeated += len(keys) - len({hash_key(t, cod, k, y) for t, k, y in keys})
+    data["counts"]["product_hash_repeated"] = repeated

@@ -188,7 +188,7 @@ Sin ROR (`--ror off`, o la institución no está en ROR), `id` es `null` y `name
 
 ## 10. `counts`
 
-`members`, `works`, `projects`, `events`, `works:<sección>`, `<título de sección>` (ítems de cada lista de `other_products`), `endorsed_works`, `works_with_affiliation` y `products_with_affiliation` (con al menos un autor con la afiliación al grupo).
+`members`, `works`, `projects`, `events`, `works:<sección>`, `<título de sección>` (ítems de cada lista de `other_products`), `endorsed_works`, `works_with_affiliation` y `products_with_affiliation` (con al menos un autor con la afiliación al grupo), y `product_hash_repeated` (§13).
 
 ## 11. Coincidencias con Scienti
 
@@ -219,3 +219,30 @@ Las 7.170 páginas descargadas el 31 de octubre y el 1 de noviembre de 2026 (los
 | Integrantes del grupo | 301.377 | | | | |
 
 "Autores que son integrantes" cuenta personas de "Autores:" (en tesis y jurados también estudiantes, que pocas veces son integrantes). "Con afiliación al grupo" cuenta ítems con al menos un integrante cuyo periodo contiene el año del ítem. Las secciones Guías de práctica clínica y Proyectos de ley ponen una fila de encabezado vacía antes de sus ítems (868 ítems en total); se leen como parte de su sección.
+
+## 13. Identificador de producto: `product_hash`
+
+Cada integrante autor de una obra (`works`) o de un producto de `other_products` lleva, en su entrada de `authors[]`, un `product_hash`: un identificador de 40 caracteres hexadecimales que sale solo del contenido del registro y del COD_RH del integrante. Es el mismo que [cvlac-json](https://github.com/restrepo/cvlac-json) pone en la entrada del dueño de cada producto de su CvLAC (§21 de su esquema), así que une un producto del GrupLAC con el mismo producto en el CV de cada integrante que lo firmó.
+
+**Cómo se calcula.** Es el SHA-1 de la clave
+
+```
+<título>|<COD_RH>|<tipo>|<año>
+```
+
+| Parte | Regla | Ejemplo |
+| --- | --- | --- |
+| título | En minúsculas, sin tildes ni otras marcas (Unicode NFKD y luego solo ASCII: "Física" → "fisica", la letra matemática "𝐽" → "j"), y solo con las letras `a`–`z` y los dígitos `0`–`9`: los espacios y la puntuación no cuentan. Un título vacío da `""`. | "Bleomicina: Una revisión" → `bleomicinaunarevision` |
+| COD_RH | El del integrante (su `id` en `authors[]`), con 10 dígitos. | `0000707619` |
+| tipo | `work` (`works`) u `other` (cualquier sección de `other_products`, también tesis y jurados). `patent` sería una sección Patentes, que el GrupLAC no tiene, y `project` no se usa: los proyectos del GrupLAC no listan autores. Los eventos no tienen `product_hash`. | `work` |
+| año | Obras: `year_published`. Demás productos: `year`, o el año de `date`. Vacío si no hay. | `2024` |
+
+Ejemplo: "Singlet Dirac dark matter streamlined", del integrante `0000707619`, publicado en 2024, tiene la clave `singletdiracdarkmatterstreamlined|0000707619|work|2024` y el `product_hash` `efc8d0bb2fa5…` (SHA-1 de la clave en ASCII).
+
+**Dónde va.** En la entrada de cada integrante (el autor con COD_RH en `id`: por nombre, o agregado desde Scienti), calculado con su propio COD_RH: un artículo de dos integrantes tiene dos `product_hash`, cada uno igual al del CV de ese integrante. Los autores que no son integrantes tienen `product_hash: null`.
+
+**Único por integrante.** Si varios registros de un integrante dan la misma clave (el mismo producto escrito dos veces, un curso dictado dos veces el mismo año), el primero, en el orden de la página (obras y luego `other_products`), conserva la clave y el n-ésimo la lleva con `|n` al final (`…|work|2024|2`). `counts.product_hash_repeated` cuenta esos registros. El primero es el que el CvLAC reproduce; uno repetido coincide solo si el CvLAC lista las mismas repeticiones en el mismo orden.
+
+**Qué no lo reproduce.** El hash cambia si cambia el título (más allá de mayúsculas, tildes, espacios y puntuación), el año o el tipo. En nueve grupos de muestra, comparados con los CvLAC de sus integrantes de la UdeA (2026-11-02), el hash del integrante está en su CV en 971 de 1.142 parejas de obra e integrante (85 %) y en 122 de 251 de los demás productos (49 %). Las diferencias son títulos editados en una de las dos páginas, años distintos (frecuentes en los demás productos) y productos que no están en el CV. Cuando hay clave de apis.colav.co, el id de Scienti (`COD_RH-COD_PRODUCTO`, §11) identifica el registro de origen y no depende del título.
+
+**En Python.** `gruplac_json.product_hash(título, cod_rh, tipo, año=None, n=1)` da el hash; `gruplac_json.product_hash.hash_key(...)`, la clave; `gruplac_json.product_hash.product_hashes(registros, cod_rh)`, los hashes únicos de una lista de `(título, tipo, año)` en orden. El módulo `product_hash.py` solo usa la biblioteca estándar y es una copia sin cambios del de cvlac-json; los casos de `tests/product_hash_vectors.json` fijan su resultado en los dos paquetes.
