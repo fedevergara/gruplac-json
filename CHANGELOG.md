@@ -4,6 +4,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+### Added
+- Authors who are members also get the group's declared institutions (`institutions`) as affiliations, with their ROR
+  id, types, external ids and address, when the product's year is in the member's period, in the form of cvlac-json's
+  affiliations from the experience (`gruplac.provenance: "gruplac institutions"`).
+
 ## [0.1.0] - 2026-11-02
 
 ### Added

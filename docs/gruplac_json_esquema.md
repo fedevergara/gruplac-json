@@ -37,7 +37,7 @@ Las secciones vacías (el GrupLAC muestra siempre las 87, la mayoría sin ítems
 | `url`, `retrieved` | string | Página leída y fecha de la extracción (UTC). |
 | `name` | string | Nombre del grupo. |
 | `profile` | object | "Datos básicos" (§4). |
-| `institutions` | array | `{name, status, ror}`: instituciones del grupo; `status` es "Avalado" u otro; `ror` es `{id, name, match}` o `null`. |
+| `institutions` | array | `{name, status, ror}`: instituciones del grupo; `status` es "Avalado" u otro; `ror` es `{id, name, match}` o `null`. Son también afiliación de los integrantes (§9). |
 | `strategic_plan` | object | "Plan Estratégico": `Plan de trabajo`, `Estado del arte`, `Objetivos`, `Retos`, `Visión`…, como en la página. |
 | `research_lines` | array | `{name}`: líneas de investigación declaradas. |
 | `members` | array | "Integrantes del grupo" (§5). |
@@ -167,9 +167,24 @@ El integrante recibe su COD_RH en `id` y en `external_ids` (`{provenance: "grupl
 }
 ```
 
-Es la misma idea que las afiliaciones de cvlac-json ("cvlac experience"): significa "era integrante del grupo ese año", no que la página declare dónde se hizo el producto. Los autores que no son integrantes tienen `id: null` y `affiliations: []`. En las tesis, el tutor y los estudiantes también reciben la institución de la tesis con su ROR (`gruplac.provenance: "gruplac thesis"`).
+y además **cada institución del grupo** (`institutions`), con su ROR, en la forma de las afiliaciones de cvlac-json por experiencia:
 
-`affiliations_from_members`: `members`, `members_with_cod_rh`, `authors`, `authors_matched`, `name_match` (por regla), `works_with_affiliation`, `products_with_affiliation`, `rule` y `ror_lookup_errors`.
+```json
+{
+  "id": "03bp5hc83",
+  "name": "Universidad de Antioquia",
+  "types": [{"source": "ror", "type": "education"}],
+  "external_ids": [{"provenance": "ror", "source": "ror", "id": "https://ror.org/03bp5hc83"}, "…"],
+  "addresses": [{"city": "Medellín", "country": "Colombia", "country_code": "CO"}],
+  "years": [2012, 2013, "…", 2026],
+  "gruplac": {"provenance": "gruplac institutions", "names": ["UNIVERSIDAD DE ANTIOQUIA"], "status": "Avalado",
+              "member": "Oscar Alberto Zapata Norena", "period": "2012/1 - Actual", "ror_match": "name"}
+}
+```
+
+Sin ROR (`--ror off`, o la institución no está en ROR), `id` es `null` y `name` es el de la página. Primero va el grupo, luego sus instituciones en el orden de la página. Es la misma idea que las afiliaciones de cvlac-json ("cvlac experience"): significa "era integrante del grupo ese año", no que la página declare dónde se hizo el producto. Los autores que no son integrantes tienen `id: null` y `affiliations: []`. En las tesis, el tutor y los estudiantes también reciben la institución de la tesis con su ROR (`gruplac.provenance: "gruplac thesis"`).
+
+`affiliations_from_members`: `ror_lookup_errors`, `members`, `members_with_cod_rh`, `authors`, `authors_matched`, `name_match` (por regla), `works_with_affiliation`, `products_with_affiliation`, `rule` y `ror_lookup_errors`.
 
 ## 10. `counts`
 

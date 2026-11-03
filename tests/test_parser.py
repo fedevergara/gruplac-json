@@ -65,7 +65,11 @@ def test_member_affiliation_by_year(data):
     assert aff["gruplac"]["provenance"] == "gruplac members"
     assert aff["gruplac"]["period"] == "2010/1 - Actual"
     assert 2017 in aff["years"]
+    inst = ana["affiliations"][1]  # the group's institution, as cvlac-json's affiliations from the experience
+    assert (inst["id"], inst["name"], inst["gruplac"]["provenance"]) == (None, "UNIVERSIDAD DE ANTIOQUIA", "gruplac institutions")
+    assert (inst["gruplac"]["status"], inst["gruplac"]["period"], inst["years"]) == ("Avalado", "2010/1 - Actual", aff["years"])
     assert carlos["affiliations"][0]["gruplac"]["linkage"] == "Estudiante"  # 2015/2 - 2018/7 contains 2017
+    assert len(carlos["affiliations"]) == 2
     assert other["id"] is None and other["affiliations"] == []
     assert old["authors"][0]["id"] == "0000000001" and old["authors"][0]["affiliations"] == []  # 2005: before 2010
 
@@ -131,7 +135,7 @@ def test_thesis(data):
     assert (t["program"], t["role"], t["pages"], t["year"]) == ("FISICA", "Tutor principal", 40, 2017)
     assert t["institution"]["name"] == "UNIVERSIDAD DE ANTIOQUIA"
     provs = [x["gruplac"]["provenance"] for x in t["authors"][0]["affiliations"]]
-    assert provs == ["gruplac members", "gruplac thesis"]
+    assert provs == ["gruplac members", "gruplac institutions", "gruplac thesis"]
 
 
 def test_jury_student(data):
