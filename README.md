@@ -26,6 +26,7 @@ gruplac-json COL0008423 --save-html g.html     # guarda también la página desc
 gruplac-json COL0008423 --html g.html.gz       # analiza una página guardada (.html o .html.gz), sin descargar
 gruplac-json COL0008423 -o -                   # JSON por la salida estándar
 gruplac-json COL0008423 --scienti off --ror off
+gruplac-json COL0008423 --format jsonld        # JSON-LD: escribe gruplac_COL0008423.jsonld
 ```
 
 | Opción | Efecto |
@@ -35,6 +36,8 @@ gruplac-json COL0008423 --scienti off --ror off
 | `--institution`, `--model-year` | Volcado de Scienti (`udea`, `univalle`, `uec`, `unaula`) y año del modelo. Por defecto se prueban en ese orden. |
 | `--apikey CLAVE` | Clave de apis.colav.co para esta ejecución. |
 | `--ror auto` / `off` | Consulta o no el registro ROR (instituciones del grupo y de las tesis). |
+| `--format json` / `jsonld` | Salida JSON (por defecto) o JSON-LD (ver más abajo). Sin `-o`, el archivo es `gruplac_COL.json` o `gruplac_COL.jsonld`. |
+| `--base URL` | Con `--format jsonld`, prefijo del IRI del grupo, al que se agrega el código COL. Por defecto, el IRI es la URL de la página del GrupLAC. |
 
 El código COL se traduce al número de GrupLAC con la tabla de los 6.936 grupos de la búsqueda de grupos de Minciencias (31 de octubre de 2026), incluida en el paquete. Un grupo que no esté en la tabla se puede pedir por su número de GrupLAC; sin código COL no se consulta Scienti.
 
@@ -53,6 +56,24 @@ from gruplac_json.parser import decode
 html = decode(open("g.html", "rb").read())
 data = extract("COL0008423", html=html, ror=False)
 ```
+
+## JSON-LD
+
+`--format jsonld` (o `to_jsonld(data)` en Python) entrega el mismo documento con `@context`, `@id` y `@type`, listo para convertirlo a RDF, como el de cvlac-json:
+
+```bash
+gruplac-json COL0008423 --format jsonld                                    # @id = URL de la página del GrupLAC
+gruplac-json COL0008423 --format jsonld --base https://ejemplo.org/grupos/ # @id = https://ejemplo.org/grupos/COL0008423
+```
+
+```python
+from gruplac_json import extract, to_jsonld
+
+doc = to_jsonld(extract("COL0008423", scienti="off"), base="https://ejemplo.org/grupos/")
+doc["works"][0]["@id"]  # 'https://ejemplo.org/grupos/COL0008423#/works/0'
+```
+
+El contexto, los tipos y los `@id` están en el [esquema](docs/gruplac_json_esquema.md#14-json-ld) (§14).
 
 ## Identificador de producto (`product_hash`)
 

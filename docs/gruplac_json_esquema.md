@@ -246,3 +246,28 @@ Ejemplo: "Singlet Dirac dark matter streamlined", del integrante `0000707619`, p
 **Qué no lo reproduce.** El hash cambia si cambia el título (más allá de mayúsculas, tildes, espacios y puntuación), el año o el tipo. En nueve grupos de muestra, comparados con los CvLAC de sus integrantes de la UdeA (2026-11-02), el hash del integrante está en su CV en 971 de 1.142 parejas de obra e integrante (85 %) y en 122 de 251 de los demás productos (49 %). Las diferencias son títulos editados en una de las dos páginas, años distintos (frecuentes en los demás productos) y productos que no están en el CV. Cuando hay clave de apis.colav.co, el id de Scienti (`COD_RH-COD_PRODUCTO`, §11) identifica el registro de origen y no depende del título.
 
 **En Python.** `gruplac_json.product_hash(título, cod_rh, tipo, año=None, n=1)` da el hash; `gruplac_json.product_hash.hash_key(...)`, la clave; `gruplac_json.product_hash.product_hashes(registros, cod_rh)`, los hashes únicos de una lista de `(título, tipo, año)` en orden. El módulo `product_hash.py` solo usa la biblioteca estándar y es una copia sin cambios del de cvlac-json; los casos de `tests/product_hash_vectors.json` fijan su resultado en los dos paquetes.
+
+## 14. JSON-LD
+
+Con `--format jsonld` (o `gruplac_json.to_jsonld(data, base=None)`) se obtiene el mismo JSON con `@context`, `@id` y `@type`, listo para convertirlo a RDF. Ninguna clave cambia de nombre ni de valor. El contexto es el de cvlac-json (§20 de [su esquema](https://github.com/restrepo/cvlac-json/blob/main/docs/cvlac_json_esquema.md)), porque los registros tienen el mismo esquema, con el vocabulario de este documento y los términos de abajo.
+
+| Elemento | Valor |
+| --- | --- |
+| `@id` del grupo | `--base` seguido del código COL (del número de GrupLAC si no hay código); sin `--base`, la URL de la página del GrupLAC (`url`) |
+| `@type` del grupo | `schema:ProfilePage` y `GruplacProfile` |
+| `@id` de integrantes, instituciones, obras, proyectos, eventos e ítems de `other_products` | IRI del grupo más un JSON Pointer (RFC 6901) a su lugar en el documento: `…#/members/0`, `…#/works/3`, `…#/other_products/Softwares/0` |
+| `@type` de los registros | `members[]`: `schema:OrganizationRole`; `institutions[]`: `schema:Organization`; `works[]`: `schema:CreativeWork`; `projects[]`: `schema:ResearchProject`; `events[]`: `schema:Event`. Los ítems de `other_products` no llevan tipo. |
+| Vocabulario (`@vocab`) | `https://github.com/restrepo/gruplac-json/blob/main/docs/gruplac_json_esquema.md#`. Una clave sin término propio queda como ese prefijo más su nombre, y su significado es el de las tablas de este documento. |
+
+Términos propios, además de los de cvlac-json (`name`, `title`, `authors` como lista ordenada, `doi`, `retrieved`…):
+
+| Clave | Término |
+| --- | --- |
+| `col` | `schema:identifier` |
+| `profile.website` | `schema:url`, como IRI |
+| `profile.email` | `schema:email` |
+| `counts`, `section_categories`, `affiliations_from_members`, `scienti` | Literales JSON (`@json`) |
+
+- <a id="GruplacProfile"></a>`GruplacProfile` es el tipo de la página completa del grupo que describe este documento.
+- Las etiquetas con espacios o tildes de `profile.raw` y `strategic_plan` ("Líder", "Plan de trabajo") reciben un término propio: el prefijo del vocabulario más la etiqueta codificada (`L%C3%ADder`).
+- <a id="section"></a>`other_products` es un mapa índice (`@container: @index`): en RDF cada ítem lleva la propiedad `section` con el título de su sección.

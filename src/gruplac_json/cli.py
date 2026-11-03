@@ -6,6 +6,7 @@ import json
 import sys
 
 from . import __version__
+from .jsonld import to_jsonld
 from .parser import decode, extract, fetch, resolve
 
 
@@ -15,7 +16,7 @@ def main(argv=None):
         description="Build a JSON from a research group's public GrupLAC page (Minciencias, Colombia)",
     )
     ap.add_argument("group", help="COL code (COL0008423) or GrupLAC number (00000000001676; leading zeros optional)")
-    ap.add_argument("-o", "--output", help="output file (default gruplac_<COL or number>.json; '-' for stdout)")
+    ap.add_argument("-o", "--output", help="output file (default gruplac_<COL or number>.json or .jsonld; '-' for stdout)")
     ap.add_argument("--html", help="parse a saved page (.html or .html.gz) instead of downloading it")
     ap.add_argument("--save-html", help="also save the downloaded page here")
     ap.add_argument("--scienti", choices=["auto", "off"], default="auto", help="add Scienti ids (needs an apis.colav.co key)")
@@ -23,6 +24,11 @@ def main(argv=None):
     ap.add_argument("--model-year", help="Scienti model year (default: the dump's latest)")
     ap.add_argument("--apikey", help="apis.colav.co key (else $COLAV_APIKEY or ~/.config/colav/apikey)")
     ap.add_argument("--ror", choices=["auto", "off"], default="auto", help="look institutions up in the ROR registry")
+    ap.add_argument("--format", choices=["json", "jsonld"], default="json", help="output JSON or JSON-LD (default json)")
+    ap.add_argument(
+        "--base",
+        help="with --format jsonld: IRI prefix for the group, followed by the COL code (default: the URL of the GrupLAC page)",
+    )
     ap.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
     a = ap.parse_args(argv)
     log = lambda *x: print(*x, file=sys.stderr)
@@ -49,8 +55,9 @@ def main(argv=None):
         ror=a.ror == "auto",
         log=log,
     )
-    out = a.output or f"gruplac_{col or nro}.json"
-    text = json.dumps(data, ensure_ascii=False, indent=1)
+    out = a.output or f"gruplac_{col or nro}.{a.format}"
+    doc = to_jsonld(data, base=a.base) if a.format == "jsonld" else data
+    text = json.dumps(doc, ensure_ascii=False, indent=1)
     if out == "-":
         print(text)
     else:

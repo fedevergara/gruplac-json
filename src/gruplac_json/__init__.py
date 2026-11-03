@@ -12,7 +12,8 @@ try:
 except PackageNotFoundError:  # running from a source tree that was never installed
     __version__ = "0.0.0"
 
+from .jsonld import to_jsonld
 from .parser import build, extract, fetch, resolve
 from .product_hash import product_hash
 
-__all__ = ["__version__", "build", "extract", "fetch", "product_hash", "resolve"]
+__all__ = ["__version__", "build", "extract", "fetch", "product_hash", "resolve", "to_jsonld"]

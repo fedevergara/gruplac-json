@@ -4,6 +4,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+### Added
+- JSON-LD output: `to_jsonld(data, base=None)` and `--format jsonld` (with `--base` for the IRI prefix), as in
+  cvlac-json and with its context: the same document plus `@context`, `@id` and `@type`; members, institutions,
+  works, projects, events and other products get JSON Pointer `@id`s (`<group IRI>#/works/0`). README section and
+  schema §14.
+
 ## [0.3.0] - 2026-11-02
 
 ### Added
