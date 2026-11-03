@@ -4,6 +4,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-11-02
+
 ### Added
 - `product_hash` on the author entry of every member of every work and other product: the SHA-1 of
   `title|COD_RH|kind|year` (normalized title, the member's COD_RH, `work` or `other`), the same value cvlac-json puts
@@ -39,6 +41,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - Items of Guías de práctica clínica and Proyectos de ley, which come after a blank header row.
 - Command line `gruplac-json COL|NRO` with `--html`, `--save-html`, `--scienti`, `--ror`, `--apikey`.
 
-[Unreleased]: https://github.com/restrepo/gruplac-json/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/restrepo/gruplac-json/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/restrepo/gruplac-json/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/restrepo/gruplac-json/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/restrepo/gruplac-json/releases/tag/v0.1.0
