@@ -242,26 +242,38 @@ def thesis_institutions(data, ror=True):
     s["ror_lookup_errors"] = s.get("ror_lookup_errors", 0) + errors[0]
 
 
+def record_title(rec):
+    """The title that goes into the product hash: the item's title or, when it has no letter or digit, the item's
+    text as the page writes it (as in cvlac-json)."""
+    from .product_hash import title_key
+
+    t = rec.get("title")
+    if title_key(t):
+        return t
+    return rec.get("text") or (rec.get("gruplac") or {}).get("text") or t
+
+
 def add_product_hashes(data):
     """`product_hash` (product_hash.py, the same as cvlac-json's) on every member's author entry of every work and other
     product, computed with that member's COD_RH: a product signed by two members has two hashes, each the one of that
     member's CvLAC. Unique per member over their records in page order (works, then other_products); non-member
-    authors get null. counts.product_hash_repeated: records that needed an occurrence number (n > 1). Projects are
-    left out: GrupLAC lists no authors for them."""
+    authors get null. counts.product_hash_repeated: records that needed an occurrence number (n > 1);
+    counts.product_hash_from_text: untitled records hashed with their text (record_title). Projects are left out:
+    GrupLAC lists no authors for them."""
     from .product_hash import hash_key, product_hashes
 
     per = {}  # cod_rh -> [(author entry, title, kind, year)]
     for w in data["works"]:
         for a in w.get("authors") or []:
             if a.get("id"):
-                per.setdefault(a["id"], []).append((a, w.get("title"), "work", w.get("year_published")))
+                per.setdefault(a["id"], []).append((a, record_title(w), "work", w.get("year_published")))
     for title, its in (data.get("other_products") or {}).items():
         kind = "patent" if title == "Patentes" else "other"
         for it in its:
             year = it.get("year") or (str(it.get("date") or "")[:4] if str(it.get("date") or "")[:4].isdigit() else None)
             for a in it.get("authors") or []:
                 if a.get("id"):
-                    per.setdefault(a["id"], []).append((a, it.get("title"), kind, year))
+                    per.setdefault(a["id"], []).append((a, record_title(it), kind, year))
     for _, rec in records(data):
         for a in rec.get("authors") or []:
             a["product_hash"] = None
@@ -272,3 +284,4 @@ def add_product_hashes(data):
             a["product_hash"] = h
         repeated += len(keys) - len({hash_key(t, cod, k, y) for t, k, y in keys})
     data["counts"]["product_hash_repeated"] = repeated
+    data["counts"]["product_hash_from_text"] = sum(record_title(r) != r.get("title") for _, r in records(data))

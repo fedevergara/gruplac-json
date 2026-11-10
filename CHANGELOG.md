@@ -10,6 +10,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   works, projects, events and other products get JSON Pointer `@id`s (`<group IRI>#/works/0`). README section and
   schema §14.
 
+## [0.4.0] - 2026-11-03
+
+### Changed
+- `product_hash` of untitled items (no letter or digit in `title`): computed with the item's `text` (`gruplac.text` for works) instead of the empty title, as in cvlac-json 0.10. Hashes of titled items do not change. New count `product_hash_from_text`. Schema §13.
+
 ## [0.3.0] - 2026-11-02
 
 ### Added
@@ -47,7 +52,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - Items of Guías de práctica clínica and Proyectos de ley, which come after a blank header row.
 - Command line `gruplac-json COL|NRO` with `--html`, `--save-html`, `--scienti`, `--ror`, `--apikey`.
 
-[Unreleased]: https://github.com/restrepo/gruplac-json/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/restrepo/gruplac-json/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/restrepo/gruplac-json/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/restrepo/gruplac-json/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/restrepo/gruplac-json/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/restrepo/gruplac-json/releases/tag/v0.1.0

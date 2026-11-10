@@ -760,7 +760,7 @@ def count(out):
         c[k] = c.get(k, 0) + 1
     c.update({k: len(v) for k, v in out["other_products"].items()})
     c["endorsed_works"] = sum(bool(w["gruplac"]["endorsed"]) for w in out["works"])
-    for k in ("works_with_affiliation", "products_with_affiliation", "product_hash_repeated"):
+    for k in ("works_with_affiliation", "products_with_affiliation", "product_hash_repeated", "product_hash_from_text"):
         if k in old:
             c[k] = old[k]
     out["counts"] = c

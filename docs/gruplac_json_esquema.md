@@ -188,7 +188,7 @@ Sin ROR (`--ror off`, o la institución no está en ROR), `id` es `null` y `name
 
 ## 10. `counts`
 
-`members`, `works`, `projects`, `events`, `works:<sección>`, `<título de sección>` (ítems de cada lista de `other_products`), `endorsed_works`, `works_with_affiliation` y `products_with_affiliation` (con al menos un autor con la afiliación al grupo), y `product_hash_repeated` (§13).
+`members`, `works`, `projects`, `events`, `works:<sección>`, `<título de sección>` (ítems de cada lista de `other_products`), `endorsed_works`, `works_with_affiliation` y `products_with_affiliation` (con al menos un autor con la afiliación al grupo), `product_hash_repeated` y `product_hash_from_text` (registros sin título con hash calculado de su texto) (§13).
 
 ## 11. Coincidencias con Scienti
 
@@ -232,7 +232,7 @@ Cada integrante autor de una obra (`works`) o de un producto de `other_products`
 
 | Parte | Regla | Ejemplo |
 | --- | --- | --- |
-| título | En minúsculas, sin tildes ni otras marcas (Unicode NFKD y luego solo ASCII: "Física" → "fisica", la letra matemática "𝐽" → "j"), y solo con las letras `a`–`z` y los dígitos `0`–`9`: los espacios y la puntuación no cuentan. Un título vacío da `""`. | "Bleomicina: Una revisión" → `bleomicinaunarevision` |
+| título | En minúsculas, sin tildes ni otras marcas (Unicode NFKD y luego solo ASCII: "Física" → "fisica", la letra matemática "𝐽" → "j"), y solo con las letras `a`–`z` y los dígitos `0`–`9`: los espacios y la puntuación no cuentan. Un ítem sin título (sin letras ni dígitos en `title`) usa en su lugar su `text` (en las obras, `gruplac.text`), como en cvlac-json. | "Bleomicina: Una revisión" → `bleomicinaunarevision` |
 | COD_RH | El del integrante (su `id` en `authors[]`), con 10 dígitos. | `0000707619` |
 | tipo | `work` (`works`) u `other` (cualquier sección de `other_products`, también tesis y jurados). `patent` sería una sección Patentes, que el GrupLAC no tiene, y `project` no se usa: los proyectos del GrupLAC no listan autores. Los eventos no tienen `product_hash`. | `work` |
 | año | Obras: `year_published`. Demás productos: `year`, o el año de `date`. Vacío si no hay. | `2024` |
@@ -242,6 +242,8 @@ Ejemplo: "Singlet Dirac dark matter streamlined", del integrante `0000707619`, p
 **Dónde va.** En la entrada de cada integrante (el autor con COD_RH en `id`: por nombre, o agregado desde Scienti), calculado con su propio COD_RH: un artículo de dos integrantes tiene dos `product_hash`, cada uno igual al del CV de ese integrante. Los autores que no son integrantes tienen `product_hash: null`.
 
 **Único por integrante.** Si varios registros de un integrante dan la misma clave (el mismo producto escrito dos veces, un curso dictado dos veces el mismo año), el primero, en el orden de la página (obras y luego `other_products`), conserva la clave y el n-ésimo la lleva con `|n` al final (`…|work|2024|2`). `counts.product_hash_repeated` cuenta esos registros. El primero es el que el CvLAC reproduce; uno repetido coincide solo si el CvLAC lista las mismas repeticiones en el mismo orden.
+
+**Ítems sin título.** Su hash sale del texto del ítem en el GrupLAC, que no se escribe igual que en el CvLAC, así que no coincide con el del CV; solo distingue los ítems sin título del mismo año, que de otro modo solo diferenciaría `|n`. El GrupLAC no tiene la sección Par evaluador, donde están casi todos los ítems sin título del CvLAC.
 
 **Qué no lo reproduce.** El hash cambia si cambia el título (más allá de mayúsculas, tildes, espacios y puntuación), el año o el tipo. En nueve grupos de muestra, comparados con los CvLAC de sus integrantes de la UdeA (2026-11-02), el hash del integrante está en su CV en 971 de 1.142 parejas de obra e integrante (85 %) y en 122 de 251 de los demás productos (49 %). Las diferencias son títulos editados en una de las dos páginas, años distintos (frecuentes en los demás productos) y productos que no están en el CV. Cuando hay clave de apis.colav.co, el id de Scienti (`COD_RH-COD_PRODUCTO`, §11) identifica el registro de origen y no depende del título.
 
